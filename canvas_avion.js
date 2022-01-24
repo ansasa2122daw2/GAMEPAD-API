@@ -1,3 +1,5 @@
+/* clase nave, clase enemigo, clase jugador */
+
 window.onload = function () {
 	let canvas = document.getElementById("canvas");
 	let ctx = canvas.getContext("2d");
