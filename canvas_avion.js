@@ -35,7 +35,7 @@ window.onload = function () {
 				if (xAxis < -30) {
 					// ctx.clearRect(0, 0, canvas.width, canvas.height);
 					ctx.drawImage(fondo, 0, 0, ctx.canvas.width, ctx.canvas.height);
-					ctx.drawImage(img, (xAxis + 520) * 2.25, yAxis * 2.25, 130, 130);
+					ctx.drawImage(img, xAxis + 520, yAxis, 130, 130); // falta poner velocidad * 2.25
 				}
 			}
 			requestAnimationFrame(animate);
