@@ -1,6 +1,12 @@
+//funcion que carga al cargar la página
 window.onload = function () {
+	//declaramos canvas
 	let canvas = document.getElementById("canvas");
 	let ctx = canvas.getContext("2d");
+
+	gameOver = false;
+
+	//creamos las imagenes (nave que sería el jugador, fondo, enemigos y el disparo)
 	let img = new Image();
 	img.src = "./images/nave1.png";
 
@@ -10,30 +16,44 @@ window.onload = function () {
 	let img_enemigos = new Image();
 	img_enemigos.src = "./images/enemigo.png";
 
-	let arrayenemigos = [];
+	let img_disparo = new Image();
+	img_disparo.src = "./images/zyro-image.png";
 
+	//cuando cargue la imagen que se dibuje
 	img.onload = function () {
 		ctx.drawImage(fondo, 0, 0, ctx.canvas.width, ctx.canvas.height);
-		ctx.drawImage(img, 0, 0, 130, 130);
+		ctx.drawImage(img, 0, 0, 60, 60);
 	};
 
+	//declaramos los axis a 0
 	var xAxis = 0;
 	var yAxis = 0;
 
+	//creamos la función animar, que recoge los gamepads del navegador
 	function animate() {
 		var gp = navigator.getGamepads()[0];
+		//si gp es true entra y da los valores a xAxis y con el Math.floor redondeamos el valor
 		if (gp) {
 			xAxis = Math.floor(gp.axes[0]) + xAxis;
 			yAxis = Math.floor(gp.axes[1]) + yAxis;
+
 			if (xAxis !== 0 || yAxis !== 0) {
+				if (gp.buttons[0].pressed) {
+					console.log("ppppp");
+					mover_disparo();
+				}
+				//console.log("xAxis", xAxis);
 				//console.log("yAxis", yAxis);
 				// ctx.clearRect(0, 0, canvas.width, canvas.height);
 				ctx.drawImage(fondo, 0, 0, ctx.canvas.width, ctx.canvas.height);
-				ctx.drawImage(img, xAxis * 2.25, yAxis * 2.25, 130, 130);
+				ctx.drawImage(img, xAxis * 2.25, yAxis * 2.25, 60, 60);
+				ctx.strokeRect(xAxis * 2.25, yAxis * 2.25, 60, 60);
+
 				if (xAxis < -30) {
 					// ctx.clearRect(0, 0, canvas.width, canvas.height);
 					ctx.drawImage(fondo, 0, 0, ctx.canvas.width, ctx.canvas.height);
-					ctx.drawImage(img, xAxis * 2.25 + 520, yAxis * 2.25, 130, 130); // falta poner velocidad * 2.25
+					ctx.drawImage(img, xAxis * 2.25 + 520, yAxis * 2.25, 60, 60);
+					ctx.strokeRect(xAxis * 2.25 + 520, yAxis * 2.25, 60, 60);
 				}
 			}
 			requestAnimationFrame(animate);
@@ -42,30 +62,93 @@ window.onload = function () {
 		}
 	}
 
+	/*function colision() {
+		if (arrayenemigos.length) {
+			arrayenemigos.forEach((enemigo) => {
+				var gp = navigator.getGamepads()[0];
+				if ((yAxis = Math.floor(gp.axes[1]) + yAxis) == enemigo.y) {
+					console.log("kabuum");
+				}
+			});
+		}
+		requestAnimationFrame(colision);
+	}*/
+
+	function colision() {
+		if (arrayenemigos.length > 0) {
+			arrayenemigos.forEach((enemigo) => {
+				let gp = navigator.getGamepads()[0];
+				if (gp) {
+					if (xAxis > enemigo.x && xAxis < enemigo.x + enemigo.width && yAxis > enemigo.y && yAxis < enemigo.y + enemigo.height) {
+						gameOver = true;
+						alert("Game Over");
+						ctx.clearRect(0, 0, canvas.width, canvas.height);
+						ctx.drawImage(fondo, 0, 0, ctx.canvas.width, ctx.canvas.height);
+						ctx.drawImage(img, 0, 0, 60, 60);
+					}
+				}
+			});
+		}
+		requestAnimationFrame(colision);
+	}
+
+	/* Función que mueve el disparo */
+
+	function mover_disparo() {
+		if (gameOver) {
+			return;
+		}
+
+		for (let i = 0; i < disparos.length; i++) {
+			if (disparos[i].y > 0) {
+				disparos[i].y -= 10;
+			} else {
+				disparos.splice(i, 1);
+			}
+		}
+	}
+
 	//clase Bala
-	class Bullet {
+	class bala {
 		constructor(initX, initY, dirX, dirY) {
 			this.initX = initX;
 			this.initY = initY;
 			this.dirX = dirX;
 			this.dirY = dirY;
 		}
-		move() {
-			if (this.initX > canvas.width - 10 || this.initX < 10 || this.initY > canvas.height - 11 || this.initY < 10) {
-				this.initX += this.dirX;
-				this.initY += this.dirY;
-				ctx.drawImage(img, 64 * 0, 64 * 0, 64, 64, this.initX - 25, this.initY - 12, img.width / 10, img.height / 10);
-				return 1;
-			} else if (this.dirX != 0 || this.dirY != 0) {
-				this.initX += this.dirX;
-				this.initY += this.dirY;
-				ctx.beginPath();
-				ctx.rect(this.initX, this.initY, 2, 2);
-				ctx.fillStyle = "red";
-				ctx.fill();
-				ctx.closePath();
-			}
+	}
+
+	bala.prototype.disparomover = function () {
+		if (this.y < 700) {
+			this.y = this.y + this.velocidad;
+		} else {
+			this.y = 0;
+			this.x = Math.round(Math.random() * 300);
 		}
+	};
+
+	//crear array disparos
+	function crear_disparo() {
+		let arraydisparos = [];
+		for (i = 0; i < 10; i++) {
+			initX = 0;
+			initY = 5;
+			dirX = 0;
+			dirY = 5;
+			let disparocreado = new bala(initX, initY, dirX, dirY);
+			arraydisparos.push(disparocreado);
+		}
+		return arraydisparos;
+	}
+
+	function mover_disparo() {
+		if (arraydisparos.length) {
+			arraydisparos.forEach((disparo) => {
+				bala.disparomover();
+				ctx.drawImage(img_disparo, disparo.initX, disparo.initY, dirX, dirY, 60, 60);
+			});
+		}
+		requestAnimationFrame(mover_disparo);
 	}
 
 	//crear jugador
@@ -76,10 +159,8 @@ window.onload = function () {
 			this.yAxis = yAxis;
 		}
 	}
-	//método disparo
-	jugador.prototype.disparo = function () {};
 
-	//método mover jugador
+	//método mover jugador y disparar
 	jugador.prototype.mover = function () {
 		animate();
 	};
@@ -96,6 +177,7 @@ window.onload = function () {
 	enemigo.prototype.mover = function () {
 		if (this.y < 700) {
 			this.y = this.y + this.velocidad;
+			ctx.strokeRect(this.x, this.y, 60, 60);
 		} else {
 			this.y = 0;
 			this.x = Math.round(Math.random() * 300);
@@ -120,17 +202,18 @@ window.onload = function () {
 			arrayenemigos.forEach((enemigo) => {
 				enemigo.mover();
 				ctx.drawImage(img_enemigos, enemigo.x, enemigo.y, 60, 60);
+				//console.log(enemigo.x, enemigo.y);
 			});
 		}
 		requestAnimationFrame(mover_enemigos);
 	}
 	//****** */
-	var gamepads = navigator.getGamepads();
-	console.log(gamepads);
 
 	window.addEventListener("gamepadconnected", function (e) {
 		console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.", e.gamepad.index, e.gamepad.id, e.gamepad.buttons.length, e.gamepad.axes.length);
+		console.log(e.gamepad.buttons);
 
+		arraydisparos = crear_disparo();
 		animate();
 		arrayenemigos = crear_enemigos();
 		mover_enemigos();
