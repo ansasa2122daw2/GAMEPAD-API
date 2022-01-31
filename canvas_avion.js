@@ -4,7 +4,7 @@ window.onload = function () {
 	let canvas = document.getElementById("canvas");
 	let ctx = canvas.getContext("2d");
 
-	gameOver = false;
+	gameOver = false; //PREGUNTAR SERGI
 
 	//creamos las imagenes (nave que sería el jugador, fondo, enemigos y el disparo)
 	let img = new Image();
@@ -16,18 +16,18 @@ window.onload = function () {
 	let img_enemigos = new Image();
 	img_enemigos.src = "./images/enemigo.png";
 
-	let img_disparo = new Image();
-	img_disparo.src = "./images/zyro-image.png";
+	let imggameOver = new Image();
+	imggameOver.src = "./images/gameOver.png";
 
 	//cuando cargue la imagen que se dibuje
 	img.onload = function () {
 		ctx.drawImage(fondo, 0, 0, ctx.canvas.width, ctx.canvas.height);
-		ctx.drawImage(img, 0, 0, 60, 60);
+		ctx.drawImage(img, 107, 245, 60, 60);
 	};
 
-	//declaramos los axis a 0
-	var xAxis = 0;
-	var yAxis = 0;
+	//declaramos los axis con su posicion
+	var xAxis = 107;
+	var yAxis = 245;
 
 	//creamos la función animar, que recoge los gamepads del navegador
 	function animate() {
@@ -40,7 +40,6 @@ window.onload = function () {
 			if (xAxis !== 0 || yAxis !== 0) {
 				if (gp.buttons[0].pressed) {
 					console.log("ppppp");
-					mover_disparo();
 				}
 				//console.log("xAxis", xAxis);
 				//console.log("yAxis", yAxis);
@@ -62,50 +61,43 @@ window.onload = function () {
 		}
 	}
 
-	/*function colision() {
-		if (arrayenemigos.length) {
+	function colision() {
+		if (arrayenemigos) {
 			arrayenemigos.forEach((enemigo) => {
 				var gp = navigator.getGamepads()[0];
-				if ((yAxis = Math.floor(gp.axes[1]) + yAxis) == enemigo.y) {
-					console.log("kabuum");
-				}
-			});
-		}
-		requestAnimationFrame(colision);
-	}*/
-
-	function colision() {
-		if (arrayenemigos.length > 0) {
-			arrayenemigos.forEach((enemigo) => {
-				let gp = navigator.getGamepads()[0];
+				// Detectar en un area pequeña
 				if (gp) {
-					if (xAxis > enemigo.x && xAxis < enemigo.x + enemigo.width && yAxis > enemigo.y && yAxis < enemigo.y + enemigo.height) {
+					//si yAxis por 2.25 (que es la velocidad) + 60 (que sería el ancho) es mayor o igual al enemigo y
+					// y yAxis sin el ancho menor o igual al enemigo y + el ancho 60. Si lo cumple entra en el otro if que calcula
+					// lo mismo pero para las x y en vez de ancho seria el height
+					if (yAxis * 2.25 + 60 >= enemigo.y && yAxis * 2.25 <= enemigo.y + 60) {
+						if (xAxis * 2.25 + 60 >= enemigo.x && xAxis * 2.25 <= enemigo.x + 60) {
+							console.log("colision");
+							gameOver = true;
+							if (gameOver) {
+								// ctx.drawImage(fondo, 0, 0, ctx.canvas.width, ctx.canvas.height);
+								// ctx.drawImage(imggameOver, 0, 0, 900, 600);
+								// cancelAnimationFrame(animate);
+								// cancelAnimationFrame(mover_enemigos);
+								// cancelAnimationFrame(colision);
+							}
+						}
+					}
+					// Cuando un enemigo llega al final
+					if (enemigo.y + 60 >= canvas.height) {
+						console.log("final");
+						arrayenemigos.splice(arrayenemigos.indexOf(enemigo), 1);
 						gameOver = true;
-						alert("Game Over");
-						ctx.clearRect(0, 0, canvas.width, canvas.height);
-						ctx.drawImage(fondo, 0, 0, ctx.canvas.width, ctx.canvas.height);
-						ctx.drawImage(img, 0, 0, 60, 60);
+						if (gameOver) {
+							ctx.drawImage(fondo, 0, 0, ctx.canvas.width, ctx.canvas.height);
+							ctx.drawImage(imggameOver, 0, 0, 900, 600);
+							cancelAnimationFrame(colision);
+						}
 					}
 				}
 			});
 		}
 		requestAnimationFrame(colision);
-	}
-
-	/* Función que mueve el disparo */
-
-	function mover_disparo() {
-		if (gameOver) {
-			return;
-		}
-
-		for (let i = 0; i < disparos.length; i++) {
-			if (disparos[i].y > 0) {
-				disparos[i].y -= 10;
-			} else {
-				disparos.splice(i, 1);
-			}
-		}
 	}
 
 	//clase Bala
@@ -128,7 +120,7 @@ window.onload = function () {
 	};
 
 	//crear array disparos
-	function crear_disparo() {
+	/*function crear_disparo() {
 		let arraydisparos = [];
 		for (i = 0; i < 10; i++) {
 			initX = 0;
@@ -139,17 +131,7 @@ window.onload = function () {
 			arraydisparos.push(disparocreado);
 		}
 		return arraydisparos;
-	}
-
-	function mover_disparo() {
-		if (arraydisparos.length) {
-			arraydisparos.forEach((disparo) => {
-				bala.disparomover();
-				ctx.drawImage(img_disparo, disparo.initX, disparo.initY, dirX, dirY, 60, 60);
-			});
-		}
-		requestAnimationFrame(mover_disparo);
-	}
+	}*/
 
 	//crear jugador
 	class jugador {
@@ -213,10 +195,14 @@ window.onload = function () {
 		console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.", e.gamepad.index, e.gamepad.id, e.gamepad.buttons.length, e.gamepad.axes.length);
 		console.log(e.gamepad.buttons);
 
-		arraydisparos = crear_disparo();
-		animate();
-		arrayenemigos = crear_enemigos();
-		mover_enemigos();
-		colision();
+		if (!window.gameOver) {
+			animate();
+			arrayenemigos = crear_enemigos();
+			mover_enemigos();
+			colision();
+		} else {
+			console.log("no");
+			ctx.drawImage(imggameOver, 50, 50, 150, 150);
+		}
 	});
 };
