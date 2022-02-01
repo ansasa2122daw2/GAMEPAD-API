@@ -67,9 +67,9 @@ window.onload = function () {
 				var gp = navigator.getGamepads()[0];
 				// Detectar en un area pequeña
 				if (gp) {
-					//si yAxis por 2.25 (que es la velocidad) + 60 (que sería el ancho) es mayor o igual al enemigo y
-					// y yAxis sin el ancho menor o igual al enemigo y + el ancho 60. Si lo cumple entra en el otro if que calcula
-					// lo mismo pero para las x y en vez de ancho seria el height
+					//si yAxis por 2.25 (que es la velocidad) + 60 (que sería el alto) es mayor o igual al enemigo y
+					// y yAxis sin el alto menor o igual al enemigo y + el alto 60. Si lo cumple entra en el otro if que calcula
+					// lo mismo pero para las x y en vez de alto seria el ancho
 					if (yAxis * 2.25 + 60 >= enemigo.y && yAxis * 2.25 <= enemigo.y + 60) {
 						if (xAxis * 2.25 + 60 >= enemigo.x && xAxis * 2.25 <= enemigo.x + 60) {
 							console.log("colision");
