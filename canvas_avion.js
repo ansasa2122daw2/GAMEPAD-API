@@ -5,6 +5,8 @@ window.onload = function () {
 	let canvas = document.getElementById("canvas");
 	let ctx = canvas.getContext("2d");
 
+
+	let victory = false;
 	let gameOver = false;
 	let arrayVidas = [];
 	arrayVidas.push(1);
@@ -29,6 +31,9 @@ window.onload = function () {
 
 	let img_bala = new Image();
 	img_bala.src = "./images/disparo.png";
+
+	let imgvictory = new Image();
+    imgvictory.src = "./images/win.jpg";
 
 	//cuando cargue la imagen que se dibuje
 	img.onload = function () {
@@ -132,6 +137,7 @@ window.onload = function () {
 							}
 						});
 					}
+
 				}
 			});
 			arraybalas.forEach((bala) => {
@@ -139,7 +145,22 @@ window.onload = function () {
 					arraybalas.splice(arraybalas.indexOf(bala), 1);
 				}
 			});
+
 		}
+		/*
+		if (arrayenemigos.length == 0) {
+			victory = true;
+			if (victory) {
+				ctx.drawImage(fondo, 0, 0, ctx.canvas.width, ctx.canvas.height);
+				ctx.drawImage(imgvictory, 0, 0, 600, 530);
+				cancelAnimationFrame(disparo);
+				cancelAnimationFrame(idAnimacio);
+				cancelAnimationFrame(move_enemigos);
+				puntuacion();
+			}
+
+		}
+		*/
 
 		requestAnimationFrame(colision);
 	}
@@ -272,7 +293,7 @@ window.onload = function () {
 var almacenar = {
 	taula: document.getElementById("taula"),
 	desar: function () {
-		localStorage.setItem(document.getElementById("nombrePuntuacion").value);
+		localStorage.setItem(document.getElementById("nombrePuntuacion").value, new Date().toDateString());
 		almacenar.esborrarTaula();
 		almacenar.mostrar();
 	},
@@ -280,12 +301,12 @@ var almacenar = {
 		for (var i = 0; i < localStorage.length; i++) {
 			var fila = taula.insertRow(0);
 			fila.insertCell(0).innerHTML = localStorage.key(i);
-			fila.insertCell(1).innerHTML = localStorage.getItem(localStorage(i));
+			fila.insertCell(1).innerHTML = localStorage.getItem(localStorage.key(i));
 		}
 	},
 	esborrarTaula: function () {
 		while (taula.rows.length > 0) {
-			taula.deleteRows(0);
+			taula.deleteRow(0);
 		}
 	}
 
