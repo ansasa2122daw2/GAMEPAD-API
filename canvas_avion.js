@@ -25,7 +25,7 @@ window.onload = function () {
 	imggameOver.src = "./images/gameOver.png";
 
 	let img_bala = new Image();
-	img_bala.src = "./images/zyro-image.png";
+	img_bala.src = "./images/disparo.png";
 
 	//cuando cargue la imagen que se dibuje
 	img.onload = function () {
