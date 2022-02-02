@@ -5,19 +5,26 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<script type="text/javascript" src="canvas_avion.js"></script>
-		<title>Document</title>
+		<title>WARS PLANE</title>
 		<style>
-			#canvas {
+			/*#canvas {
 				border: 1px solid black;
+				padding: 0;
+				margin: auto;
+				display: block;
 			}
+			#botones {
+				
+			}*/
 		</style>
 	</head>
 	<body>
+		<div id="main"></div>
 		<canvas id="canvas" width="600px" height="700px"> </canvas>
 		<canvas id="fondo" width="600px" height="700px"> </canvas>
 
 		<audio id="audio" src="./audio/audiobackground.mp3"></audio>
-		<div>
+		<div id="botones">
 			<button onclick="document.getElementById('audio').play()">REPRODUCIR</button>
 			<button onclick="document.getElementById('audio').pause()">PARAR</button>
 		</div>

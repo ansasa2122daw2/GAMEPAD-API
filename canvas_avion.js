@@ -4,7 +4,12 @@ window.onload = function () {
 	let canvas = document.getElementById("canvas");
 	let ctx = canvas.getContext("2d");
 
-	gameOver = false; //PREGUNTAR SERGI
+	let gameOver = false;
+	let arrayVidas = [];
+	arrayVidas.push(1);
+	arrayVidas.push(2);
+	console.log(arrayVidas);
+	arraybalas = [];
 
 	//creamos las imagenes (nave que sería el jugador, fondo, enemigos y el disparo)
 	let img = new Image();
@@ -18,6 +23,9 @@ window.onload = function () {
 
 	let imggameOver = new Image();
 	imggameOver.src = "./images/gameOver.png";
+
+	let img_bala = new Image();
+	img_bala.src = "./images/zyro-image.png";
 
 	//cuando cargue la imagen que se dibuje
 	img.onload = function () {
@@ -38,15 +46,18 @@ window.onload = function () {
 			yAxis = Math.floor(gp.axes[1]) + yAxis;
 
 			if (xAxis !== 0 || yAxis !== 0) {
-				if (gp.buttons[0].pressed) {
-					console.log("ppppp");
-				}
 				//console.log("xAxis", xAxis);
 				//console.log("yAxis", yAxis);
 				// ctx.clearRect(0, 0, canvas.width, canvas.height);
 				ctx.drawImage(fondo, 0, 0, ctx.canvas.width, ctx.canvas.height);
 				ctx.drawImage(img, xAxis * 2.25, yAxis * 2.25, 60, 60);
 				ctx.strokeRect(xAxis * 2.25, yAxis * 2.25, 60, 60);
+
+				//DISPARO
+				if (gp.buttons[0].pressed) {
+					console.log("ppppp");
+					arraybalas.push(crear_bala());
+				}
 
 				if (xAxis < -30) {
 					// ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -55,7 +66,7 @@ window.onload = function () {
 					ctx.strokeRect(xAxis * 2.25 + 520, yAxis * 2.25, 60, 60);
 				}
 			}
-			requestAnimationFrame(animate);
+			idAnimacio = requestAnimationFrame(animate);
 		} else {
 			console.log("Conecta el mando");
 		}
@@ -72,26 +83,35 @@ window.onload = function () {
 					// lo mismo pero para las x y en vez de alto seria el ancho
 					if (yAxis * 2.25 + 60 >= enemigo.y && yAxis * 2.25 <= enemigo.y + 60) {
 						if (xAxis * 2.25 + 60 >= enemigo.x && xAxis * 2.25 <= enemigo.x + 60) {
-							console.log("colision");
-							gameOver = true;
-							if (gameOver) {
-								// ctx.drawImage(fondo, 0, 0, ctx.canvas.width, ctx.canvas.height);
-								// ctx.drawImage(imggameOver, 0, 0, 900, 600);
-								// cancelAnimationFrame(animate);
-								// cancelAnimationFrame(mover_enemigos);
-								// cancelAnimationFrame(colision);
-							}
+							//Cancela animación
+							cancelAnimationFrame(disparo);
+							cancelAnimationFrame(idAnimacio);
+							cancelAnimationFrame(move_enemigos);
+							//Vuelve animación con axis en la posición inicial
+							xAxis = 107;
+							yAxis = 245;
+							animate();
+							arrayenemigos = crear_enemigos();
+
+							mover_enemigos();
+							colision();
+
+							//Haces pop de las vidas
+							arrayVidas.pop();
+							console.log(arrayVidas);
 						}
 					}
 					// Cuando un enemigo llega al final
 					if (enemigo.y + 60 >= canvas.height) {
-						console.log("final");
 						arrayenemigos.splice(arrayenemigos.indexOf(enemigo), 1);
 						gameOver = true;
 						if (gameOver) {
 							ctx.drawImage(fondo, 0, 0, ctx.canvas.width, ctx.canvas.height);
-							ctx.drawImage(imggameOver, 0, 0, 900, 600);
-							cancelAnimationFrame(colision);
+							ctx.drawImage(imggameOver, 0, 0, 600, 530);
+							cancelAnimationFrame(disparo);
+							cancelAnimationFrame(idAnimacio);
+							cancelAnimationFrame(move_enemigos);
+							puntuacion();
 						}
 					}
 				}
@@ -99,39 +119,6 @@ window.onload = function () {
 		}
 		requestAnimationFrame(colision);
 	}
-
-	//clase Bala
-	class bala {
-		constructor(initX, initY, dirX, dirY) {
-			this.initX = initX;
-			this.initY = initY;
-			this.dirX = dirX;
-			this.dirY = dirY;
-		}
-	}
-
-	bala.prototype.disparomover = function () {
-		if (this.y < 700) {
-			this.y = this.y + this.velocidad;
-		} else {
-			this.y = 0;
-			this.x = Math.round(Math.random() * 300);
-		}
-	};
-
-	//crear array disparos
-	/*function crear_disparo() {
-		let arraydisparos = [];
-		for (i = 0; i < 10; i++) {
-			initX = 0;
-			initY = 5;
-			dirX = 0;
-			dirY = 5;
-			let disparocreado = new bala(initX, initY, dirX, dirY);
-			arraydisparos.push(disparocreado);
-		}
-		return arraydisparos;
-	}*/
 
 	//crear jugador
 	class jugador {
@@ -148,7 +135,7 @@ window.onload = function () {
 	};
 
 	// crear enemigo
-	class enemigo {
+	class Enemigo {
 		constructor(velocidad, x, y) {
 			this.velocidad = velocidad;
 			this.x = x;
@@ -156,7 +143,7 @@ window.onload = function () {
 		}
 	}
 	// método
-	enemigo.prototype.mover = function () {
+	Enemigo.prototype.mover = function () {
 		if (this.y < 700) {
 			this.y = this.y + this.velocidad;
 			ctx.strokeRect(this.x, this.y, 60, 60);
@@ -173,7 +160,7 @@ window.onload = function () {
 			x = 0; //hacer math random para cuando haya más enemigos
 			y = 5;
 			velocidad = 0.5;
-			let enemigocreado = new enemigo(velocidad, x, y);
+			let enemigocreado = new Enemigo(velocidad, x, y);
 			arrayenemigos.push(enemigocreado);
 		}
 		return arrayenemigos;
@@ -184,25 +171,68 @@ window.onload = function () {
 			arrayenemigos.forEach((enemigo) => {
 				enemigo.mover();
 				ctx.drawImage(img_enemigos, enemigo.x, enemigo.y, 60, 60);
-				//console.log(enemigo.x, enemigo.y);
 			});
 		}
-		requestAnimationFrame(mover_enemigos);
+		move_enemigos = requestAnimationFrame(mover_enemigos);
 	}
+
+	//clase Bala
+	class Bala extends Enemigo {
+		constructor(velocidad, x, y) {
+			super(velocidad);
+			this.x = x;
+			this.y = y;
+		}
+	}
+
+	Bala.prototype.disparomover = function () {
+		if (this.y > 0) {
+			this.y = this.y - this.velocidad;
+		}
+	};
+
+	function crear_bala() {
+		velocidad = 2.5;
+		x = xAxis * 2.25;
+		y = yAxis * 2.25;
+		let balacreada = new Bala(velocidad, x, y);
+		return balacreada;
+	}
+
+	function mover_disparo() {
+		if (arraybalas.length) {
+			arraybalas.forEach((bala) => {
+				bala.disparomover();
+				ctx.drawImage(img_bala, bala.x, bala.y, 60, 60);
+			});
+		}
+		disparo = requestAnimationFrame(mover_disparo);
+	}
+
 	//****** */
 
 	window.addEventListener("gamepadconnected", function (e) {
 		console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.", e.gamepad.index, e.gamepad.id, e.gamepad.buttons.length, e.gamepad.axes.length);
 		console.log(e.gamepad.buttons);
 
-		if (!window.gameOver) {
-			animate();
-			arrayenemigos = crear_enemigos();
-			mover_enemigos();
-			colision();
-		} else {
-			console.log("no");
-			ctx.drawImage(imggameOver, 50, 50, 150, 150);
-		}
+		animate();
+		arrayenemigos = crear_enemigos();
+
+		mover_disparo();
+		mover_enemigos();
+		colision();
 	});
 };
+
+function puntuacion() {
+	let main = document.getElementById("main");
+	let nombrePuntuacion = document.createElement("input");
+	let buttonEnviar = document.createElement("button");
+
+	nombrePuntuacion.style.width = "20%";
+
+	nombrePuntuacion.setAttribute("id", "nombrePuntuacion");
+	buttonEnviar.setAttribute("id", "buttonEnviar");
+
+	main.appendChild(nombrePuntuacion);
+}
