@@ -1,10 +1,18 @@
 //funcion que carga al cargar la página
 window.onload = function () {
+	let disparar = true;
 	//declaramos canvas
 	let canvas = document.getElementById("canvas");
 	let ctx = canvas.getContext("2d");
 
 	let gameOver = false;
+	let arrayVidas = [];
+	arrayVidas.push(1);
+	arrayVidas.push(2);
+	arrayVidas.push(3);
+	arrayVidas.push(4);
+	console.log(arrayVidas);
+	arraybalas = [];
 
 	//creamos las imagenes (nave que sería el jugador, fondo, enemigos y el disparo)
 	let img = new Image();
@@ -20,7 +28,7 @@ window.onload = function () {
 	imggameOver.src = "./images/gameOver.png";
 
 	let img_bala = new Image();
-	img_bala.src = "./images/zyro-image.png";
+	img_bala.src = "./images/disparo.png";
 
 	//cuando cargue la imagen que se dibuje
 	img.onload = function () {
@@ -49,11 +57,18 @@ window.onload = function () {
 				ctx.strokeRect(xAxis * 2.25, yAxis * 2.25, 60, 60);
 
 				//DISPARO
-				if (gp.buttons[0].pressed) {
-					console.log("ppppp");
-					mover_disparo();
+				if (gp.buttons[0].pressed && disparar == true) {
+					arraybalas.push(crear_bala());
+					disparar = false;
+					setTimeout(() => {
+						disparar = true;
+					}, 500);
 				}
-
+				// //console.log(arraybalas);
+				// //console.log(arraybalas[0].x, " ", arraybalas[0].y);
+				// if (!(arraybalas.length == 0)) {
+				// 	console.log(arraybalas[0].x, " ", arraybalas[0].y);
+				// }
 				if (xAxis < -30) {
 					// ctx.clearRect(0, 0, canvas.width, canvas.height);
 					ctx.drawImage(fondo, 0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -78,26 +93,75 @@ window.onload = function () {
 					// lo mismo pero para las x y en vez de alto seria el ancho
 					if (yAxis * 2.25 + 60 >= enemigo.y && yAxis * 2.25 <= enemigo.y + 60) {
 						if (xAxis * 2.25 + 60 >= enemigo.x && xAxis * 2.25 <= enemigo.x + 60) {
-							console.log("colision");
-							//crear array vidas
+							//Cancela animación
+							cancelAnimationFrame(disparo);
+							cancelAnimationFrame(idAnimacio);
+							cancelAnimationFrame(move_enemigos);
+							//Vuelve animación con axis en la posición inicial
+							xAxis = 107;
+							yAxis = 245;
+
+							animate();
+							arrayenemigos = crear_enemigos();
+
+							mover_disparo();
+							mover_enemigos();
+							colision();
+
+							//Haces pop de las vidas
+							arrayVidas.pop();
+
+							document.getElementById("vidas").innerText = arrayVidas[arrayVidas.length - 1];
+							if (arrayVidas.length == 0) {
+								gameOver = true;
+								if (gameOver) {
+									ctx.drawImage(fondo, 0, 0, ctx.canvas.width, ctx.canvas.height);
+									ctx.drawImage(imggameOver, 0, 0, 600, 530);
+									cancelAnimationFrame(disparo);
+									cancelAnimationFrame(idAnimacio);
+									cancelAnimationFrame(move_enemigos);
+									puntuacion();
+									document.getElementById("vidas").style.display = "none";
+								}
+							}
 						}
 					}
 					// Cuando un enemigo llega al final
 					if (enemigo.y + 60 >= canvas.height) {
-						console.log("final");
 						arrayenemigos.splice(arrayenemigos.indexOf(enemigo), 1);
-						gameOver = true;
-						if (gameOver) {
-							ctx.drawImage(fondo, 0, 0, ctx.canvas.width, ctx.canvas.height);
-							ctx.drawImage(imggameOver, 0, 0, 600, 530);
-							cancelAnimationFrame(mover_disparos);
-							cancelAnimationFrame(idAnimacio);
-							cancelAnimationFrame(move_enemigos);
-						}
+
+						ctx.drawImage(fondo, 0, 0, ctx.canvas.width, ctx.canvas.height);
+						ctx.drawImage(imggameOver, 0, 0, 600, 530);
+						cancelAnimationFrame(disparo);
+						cancelAnimationFrame(idAnimacio);
+						cancelAnimationFrame(move_enemigos);
+						puntuacion();
+
+					}
+
+					if (arraybalas) {
+						arraybalas.forEach((bala) => {
+							if (bala.x < enemigo.x + 60 && bala.x > enemigo.x - 60 && bala.y < enemigo.y + 60 && bala.y > enemigo.y - 60) {
+								arrayenemigos.splice(arrayenemigos.indexOf(enemigo), 1);
+								arraybalas.splice(arraybalas.indexOf(bala), 1);
+							}
+							console.log(bala.y);
+							if (bala.y < 20) {
+								arraybalas.splice(arraybalas.indexOf(bala), 1);
+								console.log(arraybalas);
+							}
+						});
 					}
 				}
 			});
+			arraybalas.forEach((bala) => {
+				if (bala.y < 20) {
+					arraybalas.splice(arraybalas.indexOf(bala), 1);
+					console.log(arraybalas);
+				}
+			});
 		}
+
 		requestAnimationFrame(colision);
 	}
 
@@ -116,7 +180,7 @@ window.onload = function () {
 	};
 
 	// crear enemigo
-	class enemigo {
+	class Enemigo {
 		constructor(velocidad, x, y) {
 			this.velocidad = velocidad;
 			this.x = x;
@@ -124,7 +188,7 @@ window.onload = function () {
 		}
 	}
 	// método
-	enemigo.prototype.mover = function () {
+	Enemigo.prototype.mover = function () {
 		if (this.y < 700) {
 			this.y = this.y + this.velocidad;
 			ctx.strokeRect(this.x, this.y, 60, 60);
@@ -137,11 +201,11 @@ window.onload = function () {
 
 	function crear_enemigos() {
 		let arrayenemigos = [];
-		for (i = 0; i < 1; i++) {
-			x = 0; //hacer math random para cuando haya más enemigos
+		for (i = 0; i < 6; i++) {
+			x = Math.random() * 700;
 			y = 5;
 			velocidad = 0.5;
-			let enemigocreado = new enemigo(velocidad, x, y);
+			let enemigocreado = new Enemigo(velocidad, x, y);
 			arrayenemigos.push(enemigocreado);
 		}
 		return arrayenemigos;
@@ -152,14 +216,13 @@ window.onload = function () {
 			arrayenemigos.forEach((enemigo) => {
 				enemigo.mover();
 				ctx.drawImage(img_enemigos, enemigo.x, enemigo.y, 60, 60);
-				//console.log(enemigo.x, enemigo.y);
 			});
 		}
 		move_enemigos = requestAnimationFrame(mover_enemigos);
 	}
 
 	//clase Bala
-	class bala extends enemigo {
+	class Bala extends Enemigo {
 		constructor(velocidad, x, y) {
 			super(velocidad);
 			this.x = x;
@@ -167,25 +230,18 @@ window.onload = function () {
 		}
 	}
 
-	bala.prototype.disparomover = function () {
-		if (this.y < 700) {
-			this.y = this.y + this.velocidad;
-		} else {
-			this.y = 0;
-			this.x = Math.round(Math.random() * 300);
+	Bala.prototype.disparomover = function () {
+		if (this.y > 0) {
+			this.y = this.y - this.velocidad;
 		}
 	};
 
 	function crear_bala() {
-		let arraybalas = [];
-		for (i = 0; i < 1; i++) {
-			velocidad = 0.5;
-			x = yAxis * 2.25;
-			y = xAxis * 2.25;
-			let balascreadas = new bala(velocidad, x, y);
-			arraybalas.push(balascreadas);
-		}
-		return arraybalas;
+		velocidad = 2.5;
+		x = xAxis * 2.25;
+		y = yAxis * 2.25;
+		let balacreada = new Bala(velocidad, x, y);
+		return balacreada;
 	}
 
 	function mover_disparo() {
@@ -193,9 +249,10 @@ window.onload = function () {
 			arraybalas.forEach((bala) => {
 				bala.disparomover();
 				ctx.drawImage(img_bala, bala.x, bala.y, 60, 60);
+				console.log(arraybalas);
 			});
 		}
-		mover_disparos = requestAnimationFrame(mover_disparo);
+		disparo = requestAnimationFrame(mover_disparo);
 	}
 
 	//****** */
@@ -207,8 +264,49 @@ window.onload = function () {
 		animate();
 		arrayenemigos = crear_enemigos();
 
-		arraybalas = crear_bala();
+		mover_disparo();
 		mover_enemigos();
 		colision();
 	});
 };
+
+function puntuacion() {
+	let main = document.getElementById("main");
+	let nombrePuntuacion = document.createElement("input");
+	let buttonEnviar = document.createElement("button");
+
+	nombrePuntuacion.style.width = "20%";
+	buttonEnviar.style.padding = "15px 32px";
+
+	nombrePuntuacion.setAttribute("id", "nombrePuntuacion");
+	buttonEnviar.setAttribute("id", "buttonEnviar");
+
+	main.appendChild(nombrePuntuacion);
+	document.body.appendChild(buttonEnviar);
+
+}
+
+var almacenar = {
+	taula: document.getElementById("taula"),
+	desar: function () {
+		localStorage.setItem(document.getElementById("nombrePuntuacion").value);
+		almacenar.esborrarTaula();
+		almacenar.mostrar();
+	},
+	mostrar: function () {
+		for (var i = 0; i < localStorage.length; i++) {
+			var fila = taula.insertRow(0);
+			fila.insertCell(0).innerHTML = localStorage.key(i);
+			fila.insertCell(1).innerHTML = localStorage.getItem(localStorage(i));
+		}
+	},
+	esborrarTaula: function () {
+		while (taula.rows.length > 0) {
+			taula.deleteRows(0);
+		}
+	}
+
+};
+
+document.getElementById("buttonEnviar").addEventListener("click", almacenar.desar, false);
+almacenar.mostrar();

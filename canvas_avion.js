@@ -100,10 +100,11 @@ window.onload = function () {
 							//Vuelve animación con axis en la posición inicial
 							xAxis = 107;
 							yAxis = 245;
-							mover_disparo();
+
 							animate();
 							arrayenemigos = crear_enemigos();
 
+							mover_disparo();
 							mover_enemigos();
 							colision();
 
@@ -125,19 +126,6 @@ window.onload = function () {
 							}
 						}
 					}
-					// Cuando un enemigo llega al final
-					if (enemigo.y + 60 >= canvas.height) {
-						arrayenemigos.splice(arrayenemigos.indexOf(enemigo), 1);
-						gameOver = true;
-						if (gameOver) {
-							ctx.drawImage(fondo, 0, 0, ctx.canvas.width, ctx.canvas.height);
-							ctx.drawImage(imggameOver, 0, 0, 600, 530);
-							cancelAnimationFrame(disparo);
-							cancelAnimationFrame(idAnimacio);
-							cancelAnimationFrame(move_enemigos);
-							puntuacion();
-						}
-					}
 
 					if (arraybalas) {
 						arraybalas.forEach((bala) => {
@@ -148,7 +136,6 @@ window.onload = function () {
 							console.log(bala.y);
 							if (bala.y < 20) {
 								arraybalas.splice(arraybalas.indexOf(bala), 1);
-								console.log(arraybalas);
 							}
 						});
 					}
@@ -157,7 +144,6 @@ window.onload = function () {
 			arraybalas.forEach((bala) => {
 				if (bala.y < 20) {
 					arraybalas.splice(arraybalas.indexOf(bala), 1);
-					console.log(arraybalas);
 				}
 			});
 		}
@@ -204,7 +190,7 @@ window.onload = function () {
 		for (i = 0; i < 6; i++) {
 			x = Math.random() * 700;
 			y = 5;
-			velocidad = 0.5;
+			velocidad = 3;
 			let enemigocreado = new Enemigo(velocidad, x, y);
 			arrayenemigos.push(enemigocreado);
 		}
@@ -268,17 +254,47 @@ window.onload = function () {
 		mover_enemigos();
 		colision();
 	});
+
+	function puntuacion() {
+		let main = document.getElementById("main");
+		let nombrePuntuacion = document.createElement("input");
+		let buttonEnviar = document.createElement("button");
+	
+		nombrePuntuacion.style.width = "20%";
+		buttonEnviar.style.padding = "15px 32px";
+	
+		nombrePuntuacion.setAttribute("id", "nombrePuntuacion");
+		nombrePuntuacion.setAttribute("type", "text");
+		buttonEnviar.setAttribute("id", "buttonEnviar");
+	
+		main.appendChild(nombrePuntuacion);
+		document.body.appendChild(buttonEnviar);
+
+		document.getElementById("buttonEnviar").addEventListener("click", almacenar.desar, false);
+		almacenar.mostrar();
+		console.log(document.getElementById("nombrePuntuacion").value);
+	}
 };
 
-function puntuacion() {
-	let main = document.getElementById("main");
-	let nombrePuntuacion = document.createElement("input");
-	let buttonEnviar = document.createElement("button");
+var almacenar = {
+	taula: document.getElementById("taula"),
+	desar: function () {
+		localStorage.setItem(document.getElementById("nombrePuntuacion").value);
+		almacenar.esborrarTaula();
+		almacenar.mostrar();
+	},
+	mostrar: function () {
+		for (var i = 0; i < localStorage.length; i++) {
+			var fila = taula.insertRow(0);
+			fila.insertCell(0).innerHTML = localStorage.key(i);
+			fila.insertCell(1).innerHTML = localStorage.getItem(localStorage(i));
+		}
+	},
+	esborrarTaula: function () {
+		while (taula.rows.length > 0) {
+			taula.deleteRows(0);
+		}
+	}
 
-	nombrePuntuacion.style.width = "20%";
+};
 
-	nombrePuntuacion.setAttribute("id", "nombrePuntuacion");
-	buttonEnviar.setAttribute("id", "buttonEnviar");
-
-	main.appendChild(nombrePuntuacion);
-}
