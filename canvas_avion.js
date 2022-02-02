@@ -69,12 +69,6 @@ window.onload = function () {
 				// if (!(arraybalas.length == 0)) {
 				// 	console.log(arraybalas[0].x, " ", arraybalas[0].y);
 				// }
-				if (xAxis < -30) {
-					// ctx.clearRect(0, 0, canvas.width, canvas.height);
-					ctx.drawImage(fondo, 0, 0, ctx.canvas.width, ctx.canvas.height);
-					ctx.drawImage(img, xAxis * 2.25 + 520, yAxis * 2.25, 60, 60);
-					ctx.strokeRect(xAxis * 2.25 + 520, yAxis * 2.25, 60, 60);
-				}
 			}
 			idAnimacio = requestAnimationFrame(animate);
 		} else {
@@ -133,7 +127,6 @@ window.onload = function () {
 								arrayenemigos.splice(arrayenemigos.indexOf(enemigo), 1);
 								arraybalas.splice(arraybalas.indexOf(bala), 1);
 							}
-							console.log(bala.y);
 							if (bala.y < 20) {
 								arraybalas.splice(arraybalas.indexOf(bala), 1);
 							}
