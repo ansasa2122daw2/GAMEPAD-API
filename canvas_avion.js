@@ -1,5 +1,6 @@
 //funcion que carga al cargar la página
 window.onload = function () {
+	let disparar = true;
 	//declaramos canvas
 	let canvas = document.getElementById("canvas");
 	let ctx = canvas.getContext("2d");
@@ -8,6 +9,8 @@ window.onload = function () {
 	let arrayVidas = [];
 	arrayVidas.push(1);
 	arrayVidas.push(2);
+	arrayVidas.push(3);
+	arrayVidas.push(4);
 	console.log(arrayVidas);
 	arraybalas = [];
 
@@ -54,11 +57,18 @@ window.onload = function () {
 				ctx.strokeRect(xAxis * 2.25, yAxis * 2.25, 60, 60);
 
 				//DISPARO
-				if (gp.buttons[0].pressed) {
-					console.log("ppppp");
+				if (gp.buttons[0].pressed && disparar == true) {
 					arraybalas.push(crear_bala());
+					disparar = false;
+					setTimeout(() => {
+						disparar = true;
+					}, 500);
 				}
-
+				// //console.log(arraybalas);
+				// //console.log(arraybalas[0].x, " ", arraybalas[0].y);
+				// if (!(arraybalas.length == 0)) {
+				// 	console.log(arraybalas[0].x, " ", arraybalas[0].y);
+				// }
 				if (xAxis < -30) {
 					// ctx.clearRect(0, 0, canvas.width, canvas.height);
 					ctx.drawImage(fondo, 0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -90,6 +100,7 @@ window.onload = function () {
 							//Vuelve animación con axis en la posición inicial
 							xAxis = 107;
 							yAxis = 245;
+							mover_disparo();
 							animate();
 							arrayenemigos = crear_enemigos();
 
@@ -98,7 +109,20 @@ window.onload = function () {
 
 							//Haces pop de las vidas
 							arrayVidas.pop();
-							console.log(arrayVidas);
+
+							document.getElementById("vidas").innerText = arrayVidas[arrayVidas.length - 1];
+							if (arrayVidas.length == 0) {
+								gameOver = true;
+								if (gameOver) {
+									ctx.drawImage(fondo, 0, 0, ctx.canvas.width, ctx.canvas.height);
+									ctx.drawImage(imggameOver, 0, 0, 600, 530);
+									cancelAnimationFrame(disparo);
+									cancelAnimationFrame(idAnimacio);
+									cancelAnimationFrame(move_enemigos);
+									puntuacion();
+									document.getElementById("vidas").style.display = "none";
+								}
+							}
 						}
 					}
 					// Cuando un enemigo llega al final
@@ -114,9 +138,30 @@ window.onload = function () {
 							puntuacion();
 						}
 					}
+
+					if (arraybalas) {
+						arraybalas.forEach((bala) => {
+							if (bala.x < enemigo.x + 60 && bala.x > enemigo.x - 60 && bala.y < enemigo.y + 60 && bala.y > enemigo.y - 60) {
+								arrayenemigos.splice(arrayenemigos.indexOf(enemigo), 1);
+								arraybalas.splice(arraybalas.indexOf(bala), 1);
+							}
+							console.log(bala.y);
+							if (bala.y < 20) {
+								arraybalas.splice(arraybalas.indexOf(bala), 1);
+								console.log(arraybalas);
+							}
+						});
+					}
+				}
+			});
+			arraybalas.forEach((bala) => {
+				if (bala.y < 20) {
+					arraybalas.splice(arraybalas.indexOf(bala), 1);
+					console.log(arraybalas);
 				}
 			});
 		}
+
 		requestAnimationFrame(colision);
 	}
 
@@ -156,8 +201,8 @@ window.onload = function () {
 
 	function crear_enemigos() {
 		let arrayenemigos = [];
-		for (i = 0; i < 1; i++) {
-			x = 0; //hacer math random para cuando haya más enemigos
+		for (i = 0; i < 6; i++) {
+			x = Math.random() * 700;
 			y = 5;
 			velocidad = 0.5;
 			let enemigocreado = new Enemigo(velocidad, x, y);
@@ -204,6 +249,7 @@ window.onload = function () {
 			arraybalas.forEach((bala) => {
 				bala.disparomover();
 				ctx.drawImage(img_bala, bala.x, bala.y, 60, 60);
+				console.log(arraybalas);
 			});
 		}
 		disparo = requestAnimationFrame(mover_disparo);
