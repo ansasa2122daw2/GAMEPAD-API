@@ -12,21 +12,20 @@
 		<div class="grid">
 			<div class="primerdiv">
 				<div class="titulo"><p>WARS PLANE</p></div>
+				<br />
+				<div id="punt"><p>PUNTUACIÓN</p></div>
 				<div id="main"></div>
+				<table class="storage" id="taula"></table>
 			</div>
 			<canvas id="canvas" width="600px" height="700px"> </canvas>
-			<canvas id="fondo" width="600px" height="700px"> </canvas>
-
-			<audio id="audio" src="./audio/audiobackground.mp3" autoplay loop></audio>
-			<div id="botones">
-				<button onclick="document.getElementById('audio').play()">REPRODUCIR</button>
-				<button onclick="document.getElementById('audio').pause()"><img src="images/mute.png"></button>
-			</div>
 			<label id="puntuacionJ">0</label>
 			<label id="vidas">4 VIDAS</label>
 			<div id="number"></div>
-			<table class="storage" id="taula"></table>
-			
+
+			<audio id="audio" src="./audio/audiobackground.mp3" loop autoplay></audio>
+			<div id="botones">
+				<button id="btnaudio" onclick="document.getElementById('audio').pause()"><img src="images/mute.png" /></button>
+			</div>
 		</div>
 	</body>
 </html>

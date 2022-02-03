@@ -295,14 +295,18 @@ window.onload = function () {
 		let buttonEnviar = document.createElement("button");
 
 		nombrePuntuacion.style.width = "20%";
-		buttonEnviar.style.padding = "15px 32px";
+		nombrePuntuacion.style.margin = "3rem";
+		buttonEnviar.style.padding = "3px";
 
 		nombrePuntuacion.setAttribute("id", "nombrePuntuacion");
 		nombrePuntuacion.setAttribute("type", "text");
 		buttonEnviar.setAttribute("id", "buttonEnviar");
+		buttonEnviar.type = "button";
+		buttonEnviar.innerHTML = "Envia";
+		nombrePuntuacion.placeholder = "Escribe tu nombre";
 
 		main.appendChild(nombrePuntuacion);
-		document.body.appendChild(buttonEnviar);
+		main.appendChild(buttonEnviar);
 
 		// Esto hace que al clickar el boton se envie a almacenar desar y luego la muestra
 		document.getElementById("buttonEnviar").addEventListener("click", almacenar.desar, false);
