@@ -1,8 +1,5 @@
 //funcion que carga al cargar la página
 window.onload = function () {
-	//Puntuación
-	let arraypuntuacion = [];
-
 	let disparar = true;
 	//declaramos canvas
 	let canvas = document.getElementById("canvas");
@@ -18,6 +15,17 @@ window.onload = function () {
 	arrayVidas.push(3);
 	arrayVidas.push(4);
 	console.log(arrayVidas);
+
+	//Timer
+	var n = 0;
+	var l = document.getElementById("number");
+	window.setInterval(function () {
+		l.innerHTML = n;
+		n++;
+	}, 1000);
+
+	//Puntuación
+	let arraypuntuacion = [];
 
 	//sort()
 	console.log(arraypuntuacion.sort());
@@ -71,7 +79,7 @@ window.onload = function () {
 				// ctx.clearRect(0, 0, canvas.width, canvas.height);
 				ctx.drawImage(fondo, 0, 0, ctx.canvas.width, ctx.canvas.height);
 				ctx.drawImage(img, xAxis * 2.25, yAxis * 2.25, 60, 60);
-				ctx.strokeRect(xAxis * 2.25, yAxis * 2.25, 60, 60);
+				//ctx.strokeRect(xAxis * 2.25, yAxis * 2.25, 60, 60);
 
 				//DISPARO
 				if (gp.buttons[0].pressed && disparar == true) {
@@ -141,7 +149,7 @@ window.onload = function () {
 						arraybalas.forEach((bala) => {
 							if (bala.x < enemigo.x + 60 && bala.x > enemigo.x - 60 && bala.y < enemigo.y + 60 && bala.y > enemigo.y - 60) {
 								//haciendo el reduce que añade puntos
-								arraypuntuacion.push(arraypuntuacion.reduce(reducer, 100));
+								arraypuntuacion.push(arraypuntuacion.reduce(reducer, 1));
 								document.getElementById("puntuacionJ").innerText = arraypuntuacion[arraypuntuacion.length - 1];
 								arrayenemigos.splice(arrayenemigos.indexOf(enemigo), 1);
 								arraybalas.splice(arraybalas.indexOf(bala), 1);
@@ -162,7 +170,7 @@ window.onload = function () {
 
 	/*function ganarPartida() {
 		if (arrayenemigos.length == 0) {
-			arrayenemigos = [];
+			arrayenemigos.splice(arrayenemigos.indexOf(enemigo), 1);
 			ctx.drawImage(fondo, 0, 0, ctx.canvas.width, ctx.canvas.height);
 			ctx.drawImage(imgvictory, 0, 0, 600, 530);
 			cancelAnimationFrame(disparo);
@@ -199,7 +207,7 @@ window.onload = function () {
 	Enemigo.prototype.mover = function () {
 		if (this.y < 700) {
 			this.y = this.y + this.velocidad;
-			ctx.strokeRect(this.x, this.y, 60, 60);
+			//ctx.strokeRect(this.x, this.y, 60, 60);
 		} else {
 			this.y = 0;
 			this.x = Math.round(Math.random() * 300);
@@ -209,13 +217,16 @@ window.onload = function () {
 
 	function crear_enemigos() {
 		let arrayenemigos = [];
-		for (i = 0; i < 6; i++) {
-			x = Math.random() * 700;
-			y = 5;
-			velocidad = 3;
-			let enemigocreado = new Enemigo(velocidad, x, y);
-			arrayenemigos.push(enemigocreado);
-		}
+		setInterval(() => {
+			for (i = 0; i < 3; i++) {
+				x = Math.random() * 700;
+				y = 0;
+				velocidad = 2;
+
+				let enemigocreado = new Enemigo(velocidad, x, y);
+				arrayenemigos.push(enemigocreado);
+			}
+		}, 3000);
 		return arrayenemigos;
 	}
 
@@ -257,13 +268,12 @@ window.onload = function () {
 			arraybalas.forEach((bala) => {
 				bala.disparomover();
 				ctx.drawImage(img_bala, bala.x, bala.y, 60, 60);
-				//console.log(arraybalas);
 			});
 		}
 		disparo = requestAnimationFrame(mover_disparo);
 	}
 
-	//****** */
+	/*******/
 
 	window.addEventListener("gamepadconnected", function (e) {
 		console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.", e.gamepad.index, e.gamepad.id, e.gamepad.buttons.length, e.gamepad.axes.length);
@@ -299,8 +309,6 @@ window.onload = function () {
 	var almacenar = {
 		taula: document.getElementById("taula"),
 		desar: function () {
-			//NO COGE EL VALOR PORQUE ESTA DENTRO DEL ONLOAD
-
 			localStorage.setItem(arraypuntuacion[arraypuntuacion.length - 1], document.getElementById("nombrePuntuacion").value);
 			almacenar.esborrarTaula();
 			almacenar.mostrar();
