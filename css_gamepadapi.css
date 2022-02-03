@@ -3,20 +3,21 @@ body {
 }
 @font-face {
 	font-family: FUENTE;
-	src: url("./fonts/airstrikeb3d.ttf");
+	src: url("./fonts/airstrike3d.ttf");
 }
 p {
 	font-weight: bold;
 	font-family: FUENTE;
+	color: white;
 	font-size: 50px;
 	margin: 0px;
 	grid-area: titulo;
 }
 
-/* .grid {
+ .grid {
 	display: grid;
 	grid-template-areas: "titulo canvas volumen";
-} */
+} 
 
 #canvas {
 	border: 1px solid black;
