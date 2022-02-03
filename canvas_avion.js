@@ -5,15 +5,27 @@ window.onload = function () {
 	let canvas = document.getElementById("canvas");
 	let ctx = canvas.getContext("2d");
 
-
 	let victory = false;
 	let gameOver = false;
+
+	//Array Vidas usando push para luego hacer pop en colision() y hacer una pila
 	let arrayVidas = [];
 	arrayVidas.push(1);
 	arrayVidas.push(2);
 	arrayVidas.push(3);
 	arrayVidas.push(4);
 	console.log(arrayVidas);
+
+	//Puntuación
+	let arraypuntuacion = [];
+
+	//sort()
+	console.log(arraypuntuacion.sort());
+
+	//reducer para la puntuación
+	const reducer = (previousValue, currentValue) => previousValue + currentValue;
+
+	//Un array de balas
 	arraybalas = [];
 
 	//creamos las imagenes (nave que sería el jugador, fondo, enemigos y el disparo)
@@ -33,7 +45,7 @@ window.onload = function () {
 	img_bala.src = "./images/disparo.png";
 
 	let imgvictory = new Image();
-    imgvictory.src = "./images/win.jpg";
+	imgvictory.src = "./images/win.jpg";
 
 	//cuando cargue la imagen que se dibuje
 	img.onload = function () {
@@ -85,7 +97,6 @@ window.onload = function () {
 		if (arrayenemigos) {
 			arrayenemigos.forEach((enemigo) => {
 				var gp = navigator.getGamepads()[0];
-				// Detectar en un area pequeña
 				if (gp) {
 					//si yAxis por 2.25 (que es la velocidad) + 60 (que sería el alto) es mayor o igual al enemigo y
 					// y yAxis sin el alto menor o igual al enemigo y + el alto 60. Si lo cumple entra en el otro if que calcula
@@ -129,15 +140,14 @@ window.onload = function () {
 					if (arraybalas) {
 						arraybalas.forEach((bala) => {
 							if (bala.x < enemigo.x + 60 && bala.x > enemigo.x - 60 && bala.y < enemigo.y + 60 && bala.y > enemigo.y - 60) {
+								//haciendo el reduce que añade 100 puntos
+								document.getElementById("puntuacionJ").innerText = arraypuntuacion.reduce(reducer, 100);
+								arraypuntuacion.push(100);
 								arrayenemigos.splice(arrayenemigos.indexOf(enemigo), 1);
-								arraybalas.splice(arraybalas.indexOf(bala), 1);
-							}
-							if (bala.y < 20) {
 								arraybalas.splice(arraybalas.indexOf(bala), 1);
 							}
 						});
 					}
-
 				}
 			});
 			arraybalas.forEach((bala) => {
@@ -145,7 +155,6 @@ window.onload = function () {
 					arraybalas.splice(arraybalas.indexOf(bala), 1);
 				}
 			});
-
 		}
 		/*
 		if (arrayenemigos.length == 0) {
@@ -249,7 +258,7 @@ window.onload = function () {
 			arraybalas.forEach((bala) => {
 				bala.disparomover();
 				ctx.drawImage(img_bala, bala.x, bala.y, 60, 60);
-				console.log(arraybalas);
+				//console.log(arraybalas);
 			});
 		}
 		disparo = requestAnimationFrame(mover_disparo);
@@ -273,27 +282,27 @@ window.onload = function () {
 		let main = document.getElementById("main");
 		let nombrePuntuacion = document.createElement("input");
 		let buttonEnviar = document.createElement("button");
-	
+
 		nombrePuntuacion.style.width = "20%";
 		buttonEnviar.style.padding = "15px 32px";
-	
+
 		nombrePuntuacion.setAttribute("id", "nombrePuntuacion");
 		nombrePuntuacion.setAttribute("type", "text");
 		buttonEnviar.setAttribute("id", "buttonEnviar");
-	
+
 		main.appendChild(nombrePuntuacion);
 		document.body.appendChild(buttonEnviar);
 
 		document.getElementById("buttonEnviar").addEventListener("click", almacenar.desar, false);
 		almacenar.mostrar();
-		console.log(document.getElementById("nombrePuntuacion").value);
 	}
 };
 
 var almacenar = {
 	taula: document.getElementById("taula"),
 	desar: function () {
-		localStorage.setItem(document.getElementById("nombrePuntuacion").value, new Date().toDateString());
+		//NO COGE EL VALOR PORQUE ESTA DENTRO DEL ONLOAD ?????????
+		localStorage.setItem(JSON.stringify(arraypuntuacion), document.getElementById("nombrePuntuacion").value);
 		almacenar.esborrarTaula();
 		almacenar.mostrar();
 	},
@@ -308,7 +317,5 @@ var almacenar = {
 		while (taula.rows.length > 0) {
 			taula.deleteRow(0);
 		}
-	}
-
+	},
 };
-

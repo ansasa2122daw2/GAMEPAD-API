@@ -27,6 +27,17 @@
 				font-size: 20px;
 				font-weight: bold;
 			}
+			#puntuacionJ {
+				display: block;
+				width: 50px;
+				text-align: center;
+				position: absolute;
+				top: 10px;
+				left: 10px;
+				color: white;
+				font-size: 20px;
+				font-weight: bold;
+			}
 		</style>
 	</head>
 	<body>
@@ -39,6 +50,7 @@
 			<button onclick="document.getElementById('audio').play()">REPRODUCIR</button>
 			<button onclick="document.getElementById('audio').pause()">PARAR</button>
 		</div>
+		<label id="puntuacionJ">0</label>
 		<label id="vidas">4 VIDAS</label>
 		<table class="storage" id="taula"></table>
 	</body>
