@@ -168,19 +168,6 @@ window.onload = function () {
 		requestAnimationFrame(colision);
 	}
 
-	/*function ganarPartida() {
-		if (arrayenemigos.length == 0) {
-			arrayenemigos.splice(arrayenemigos.indexOf(enemigo), 1);
-			ctx.drawImage(fondo, 0, 0, ctx.canvas.width, ctx.canvas.height);
-			ctx.drawImage(imgvictory, 0, 0, 600, 530);
-			cancelAnimationFrame(disparo);
-			cancelAnimationFrame(idAnimacio);
-			cancelAnimationFrame(move_enemigos);
-			puntuacion();
-		}
-		requestAnimationFrame(ganarPartida);
-	}*/
-
 	//crear jugador
 	class jugador {
 		constructor(velocidad, xAxis, yAxis) {
@@ -217,6 +204,14 @@ window.onload = function () {
 
 	function crear_enemigos() {
 		let arrayenemigos = [];
+		for (i = 0; i < 5; i++) {
+			x = Math.random() * 700;
+			y = 0;
+			velocidad = 2;
+
+			let enemigocreado = new Enemigo(velocidad, x, y);
+			arrayenemigos.push(enemigocreado);
+		}
 		setInterval(() => {
 			for (i = 0; i < 3; i++) {
 				x = Math.random() * 700;
