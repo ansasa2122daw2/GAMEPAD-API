@@ -5,7 +5,6 @@ window.onload = function () {
 	let canvas = document.getElementById("canvas");
 	let ctx = canvas.getContext("2d");
 
-	let victory = false;
 	let gameOver = false;
 
 	//Array Vidas usando push para luego hacer pop en colision() y hacer una pila
@@ -129,7 +128,10 @@ window.onload = function () {
 							//Haces pop de las vidas
 							arrayVidas.pop();
 
+							// Cada vez que pierdas una vida se verá en el html
 							document.getElementById("vidas").innerText = arrayVidas[arrayVidas.length - 1];
+
+							// Si pierdes todas las vidas se acaba el juego y se enseña la función puntuación
 							if (arrayVidas.length == 0) {
 								gameOver = true;
 								if (gameOver) {
@@ -145,6 +147,7 @@ window.onload = function () {
 						}
 					}
 
+					// Esto es la colision de balas con enemigo
 					if (arraybalas) {
 						arraybalas.forEach((bala) => {
 							if (bala.x < enemigo.x + 60 && bala.x > enemigo.x - 60 && bala.y < enemigo.y + 60 && bala.y > enemigo.y - 60) {
@@ -158,6 +161,8 @@ window.onload = function () {
 					}
 				}
 			});
+
+			// Cogiendo el array de balas y haciendo for each haces que cada bala que se vaya fuera de 20 se elimine con splice
 			arraybalas.forEach((bala) => {
 				if (bala.y < 20) {
 					arraybalas.splice(arraybalas.indexOf(bala), 1);
@@ -168,7 +173,7 @@ window.onload = function () {
 		requestAnimationFrame(colision);
 	}
 
-	//crear jugador
+	//Clase Jugador
 	class jugador {
 		constructor(velocidad, xAxis, yAxis) {
 			this.velocidad = velocidad;
@@ -200,8 +205,8 @@ window.onload = function () {
 			this.x = Math.round(Math.random() * 300);
 		}
 	};
-	//crear varios enemigos en la clase
 
+	//crear varios enemigos en la clase y ponemos un setInterval con un tiempo de cada 3 segundos salgan 3 enemigos más
 	function crear_enemigos() {
 		let arrayenemigos = [];
 		for (i = 0; i < 5; i++) {
@@ -225,6 +230,7 @@ window.onload = function () {
 		return arrayenemigos;
 	}
 
+	//funcion para mover los enemigos
 	function mover_enemigos() {
 		if (arrayenemigos.length) {
 			arrayenemigos.forEach((enemigo) => {
@@ -244,12 +250,14 @@ window.onload = function () {
 		}
 	}
 
+	// Tenemos el método mover de bala
 	Bala.prototype.disparomover = function () {
 		if (this.y > 0) {
 			this.y = this.y - this.velocidad;
 		}
 	};
 
+	// Creamos las balas con esta función y cogiendo las Axis del jugador
 	function crear_bala() {
 		velocidad = 2.5;
 		x = xAxis * 2.25;
@@ -258,6 +266,7 @@ window.onload = function () {
 		return balacreada;
 	}
 
+	// Movemos la bala con esta función disparo la cual cogemos el array y hacemos un foreach para pasar por el array con bala
 	function mover_disparo() {
 		if (arraybalas.length) {
 			arraybalas.forEach((bala) => {
@@ -270,6 +279,7 @@ window.onload = function () {
 
 	/*******/
 
+	// Esto hace que al conectar el gamepad hagan todas estás AnimationFrame
 	window.addEventListener("gamepadconnected", function (e) {
 		console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.", e.gamepad.index, e.gamepad.id, e.gamepad.buttons.length, e.gamepad.axes.length);
 		console.log(e.gamepad.buttons);
@@ -282,6 +292,7 @@ window.onload = function () {
 		colision();
 	});
 
+	// Función puntuación que crea los elementos para que aparezcan y luego la llamamos al perder todas las vidas
 	function puntuacion() {
 		let main = document.getElementById("main");
 		let nombrePuntuacion = document.createElement("input");
@@ -297,10 +308,12 @@ window.onload = function () {
 		main.appendChild(nombrePuntuacion);
 		document.body.appendChild(buttonEnviar);
 
+		// Esto hace que al clickar el boton se envie a almacenar desar y luego la muestra
 		document.getElementById("buttonEnviar").addEventListener("click", almacenar.desar, false);
 		almacenar.mostrar();
 	}
 
+	// Esto sería para el web storage
 	var almacenar = {
 		taula: document.getElementById("taula"),
 		desar: function () {
