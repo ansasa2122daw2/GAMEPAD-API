@@ -80,7 +80,7 @@ window.onload = function () {
 				ctx.drawImage(img, xAxis * 2.25, yAxis * 2.25, 60, 60);
 				//ctx.strokeRect(xAxis * 2.25, yAxis * 2.25, 60, 60);
 
-				//DISPARO
+				//DISPARO al pulsar la A haces push de la creación de la bala al array de balas
 				if (gp.buttons[0].pressed && disparar == true) {
 					arraybalas.push(crear_bala());
 					disparar = false;
@@ -88,11 +88,6 @@ window.onload = function () {
 						disparar = true;
 					}, 500);
 				}
-				// //console.log(arraybalas);
-				// //console.log(arraybalas[0].x, " ", arraybalas[0].y);
-				// if (!(arraybalas.length == 0)) {
-				// 	console.log(arraybalas[0].x, " ", arraybalas[0].y);
-				// }
 			}
 			idAnimacio = requestAnimationFrame(animate);
 		} else {
@@ -100,6 +95,7 @@ window.onload = function () {
 		}
 	}
 
+	// Función colision para cuando el jugador choca con enemigos y para cuando la bala choca con enemigos
 	function colision() {
 		if (arrayenemigos) {
 			arrayenemigos.forEach((enemigo) => {
