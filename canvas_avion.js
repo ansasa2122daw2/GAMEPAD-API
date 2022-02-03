@@ -1,5 +1,8 @@
 //funcion que carga al cargar la página
 window.onload = function () {
+	//Puntuación
+	let arraypuntuacion = [];
+
 	let disparar = true;
 	//declaramos canvas
 	let canvas = document.getElementById("canvas");
@@ -15,9 +18,6 @@ window.onload = function () {
 	arrayVidas.push(3);
 	arrayVidas.push(4);
 	console.log(arrayVidas);
-
-	//Puntuación
-	let arraypuntuacion = [];
 
 	//sort()
 	console.log(arraypuntuacion.sort());
@@ -140,9 +140,9 @@ window.onload = function () {
 					if (arraybalas) {
 						arraybalas.forEach((bala) => {
 							if (bala.x < enemigo.x + 60 && bala.x > enemigo.x - 60 && bala.y < enemigo.y + 60 && bala.y > enemigo.y - 60) {
-								//haciendo el reduce que añade 100 puntos
-								document.getElementById("puntuacionJ").innerText = arraypuntuacion.reduce(reducer, 100);
-								arraypuntuacion.push(100);
+								//haciendo el reduce que añade puntos
+								arraypuntuacion.push(arraypuntuacion.reduce(reducer, 100));
+								document.getElementById("puntuacionJ").innerText = arraypuntuacion[arraypuntuacion.length - 1];
 								arrayenemigos.splice(arrayenemigos.indexOf(enemigo), 1);
 								arraybalas.splice(arraybalas.indexOf(bala), 1);
 							}
@@ -156,23 +156,22 @@ window.onload = function () {
 				}
 			});
 		}
-		/*
-		if (arrayenemigos.length == 0) {
-			victory = true;
-			if (victory) {
-				ctx.drawImage(fondo, 0, 0, ctx.canvas.width, ctx.canvas.height);
-				ctx.drawImage(imgvictory, 0, 0, 600, 530);
-				cancelAnimationFrame(disparo);
-				cancelAnimationFrame(idAnimacio);
-				cancelAnimationFrame(move_enemigos);
-				puntuacion();
-			}
-
-		}
-		*/
 
 		requestAnimationFrame(colision);
 	}
+
+	/*function ganarPartida() {
+		if (arrayenemigos.length == 0) {
+			arrayenemigos = [];
+			ctx.drawImage(fondo, 0, 0, ctx.canvas.width, ctx.canvas.height);
+			ctx.drawImage(imgvictory, 0, 0, 600, 530);
+			cancelAnimationFrame(disparo);
+			cancelAnimationFrame(idAnimacio);
+			cancelAnimationFrame(move_enemigos);
+			puntuacion();
+		}
+		requestAnimationFrame(ganarPartida);
+	}*/
 
 	//crear jugador
 	class jugador {
@@ -296,26 +295,27 @@ window.onload = function () {
 		document.getElementById("buttonEnviar").addEventListener("click", almacenar.desar, false);
 		almacenar.mostrar();
 	}
-};
 
-var almacenar = {
-	taula: document.getElementById("taula"),
-	desar: function () {
-		//NO COGE EL VALOR PORQUE ESTA DENTRO DEL ONLOAD ?????????
-		localStorage.setItem(JSON.stringify(arraypuntuacion), document.getElementById("nombrePuntuacion").value);
-		almacenar.esborrarTaula();
-		almacenar.mostrar();
-	},
-	mostrar: function () {
-		for (var i = 0; i < localStorage.length; i++) {
-			var fila = taula.insertRow(0);
-			fila.insertCell(0).innerHTML = localStorage.key(i);
-			fila.insertCell(1).innerHTML = localStorage.getItem(localStorage.key(i));
-		}
-	},
-	esborrarTaula: function () {
-		while (taula.rows.length > 0) {
-			taula.deleteRow(0);
-		}
-	},
+	var almacenar = {
+		taula: document.getElementById("taula"),
+		desar: function () {
+			//NO COGE EL VALOR PORQUE ESTA DENTRO DEL ONLOAD
+
+			localStorage.setItem(arraypuntuacion[arraypuntuacion.length - 1], document.getElementById("nombrePuntuacion").value);
+			almacenar.esborrarTaula();
+			almacenar.mostrar();
+		},
+		mostrar: function () {
+			for (var i = 0; i < localStorage.length; i++) {
+				var fila = taula.insertRow(0);
+				fila.insertCell(0).innerHTML = localStorage.key(i);
+				fila.insertCell(1).innerHTML = localStorage.getItem(localStorage.key(i));
+			}
+		},
+		esborrarTaula: function () {
+			while (taula.rows.length > 0) {
+				taula.deleteRow(0);
+			}
+		},
+	};
 };
