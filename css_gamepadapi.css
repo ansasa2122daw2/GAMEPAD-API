@@ -1,0 +1,63 @@
+body {
+	background-color: #080f24;
+}
+@font-face {
+	font-family: FUENTE;
+	src: url("./fonts/airstrikeb3d.ttf");
+}
+p {
+	font-weight: bold;
+	font-family: FUENTE;
+	font-size: 50px;
+	margin: 0px;
+	grid-area: titulo;
+}
+
+/* .grid {
+	display: grid;
+	grid-template-areas: "titulo canvas volumen";
+} */
+
+#canvas {
+	border: 1px solid black;
+	padding: 0;
+	margin: auto;
+	display: block;
+	grid-area: canvas;
+}
+#botones {
+	grid-area: volumen;
+}
+#vidas {
+	display: block;
+	width: 50px;
+	text-align: center;
+	position: absolute;
+	top: 10px;
+	left: 990px;
+	color: white;
+	font-size: 20px;
+	font-weight: bold;
+}
+#puntuacionJ {
+	display: block;
+	width: 50px;
+	text-align: center;
+	position: absolute;
+	top: 10px;
+	left: 490px;
+	color: white;
+	font-size: 20px;
+	font-weight: bold;
+}
+#number {
+	display: block;
+	width: 50px;
+	text-align: center;
+	position: absolute;
+	top: 10px;
+	left: 720px;
+	color: white;
+	font-size: 20px;
+	font-weight: bold;
+}

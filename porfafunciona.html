@@ -5,53 +5,25 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<script type="text/javascript" src="canvas_avion.js"></script>
+		<link href="./css_gamepadapi.css" rel="stylesheet" />
 		<title>WARS PLANE</title>
-		<style>
-			/*#canvas {
-				border: 1px solid black;
-				padding: 0;
-				margin: auto;
-				display: block;
-			}
-			#botones {
-				
-			}*/
-			#vidas {
-				display: block;
-				width: 50px;
-				text-align: center;
-				position: absolute;
-				top: 10px;
-				left: 500px;
-				color: white;
-				font-size: 20px;
-				font-weight: bold;
-			}
-			#puntuacionJ {
-				display: block;
-				width: 50px;
-				text-align: center;
-				position: absolute;
-				top: 10px;
-				left: 10px;
-				color: white;
-				font-size: 20px;
-				font-weight: bold;
-			}
-		</style>
 	</head>
 	<body>
-		<div id="main"></div>
-		<canvas id="canvas" width="600px" height="700px"> </canvas>
-		<canvas id="fondo" width="600px" height="700px"> </canvas>
+		<div class="grid">
+			<div id="main"></div>
+			<canvas id="canvas" width="600px" height="700px"> </canvas>
+			<canvas id="fondo" width="600px" height="700px"> </canvas>
 
-		<audio id="audio" src="./audio/audiobackground.mp3"></audio>
-		<div id="botones">
-			<button onclick="document.getElementById('audio').play()">REPRODUCIR</button>
-			<button onclick="document.getElementById('audio').pause()">PARAR</button>
+			<audio id="audio" src="./audio/audiobackground.mp3" autoplay loop></audio>
+			<div id="botones">
+				<button onclick="document.getElementById('audio').play()">REPRODUCIR</button>
+				<button onclick="document.getElementById('audio').pause()">PARAR</button>
+			</div>
+			<label id="puntuacionJ">0</label>
+			<label id="vidas">4 VIDAS</label>
+			<div id="number"></div>
+			<table class="storage" id="taula"></table>
+			<div class="titulo"><p>WARS PLANE</p></div>
 		</div>
-		<label id="puntuacionJ">0</label>
-		<label id="vidas">4 VIDAS</label>
-		<table class="storage" id="taula"></table>
 	</body>
 </html>
